@@ -7,6 +7,19 @@
 </head>
 <body>
 <script>
+
+  const pressed = [];
+  const secretCode = "keagen";
+  window.addEventListener('keyup', (e) => {
+    console.log(e.key);
+    pressed.push(e.key);
+    //-1 because indexes start from 0 and negative to reverse direction
+    //array.splice(index, howmany, item1, ....., itemX)
+    pressed.splice(-secretCode.length - 1, pressed.length - secretCode.length);
+    if(pressed.join('').includes(secretCode)) {
+      console.log('How do you know my name?');
+    }
+  });
 </script>
 </body>
 </html>

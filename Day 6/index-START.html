@@ -17,6 +17,54 @@
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+//empty array for the fetch endpoint
+const cities = [];
+
+//Fetches a promise THEN does something with the fetch if the promise returns
+//trying to convert a blob returns another promise
+fetch(endpoint).then(blob => blob.json())
+        .then(data => cities.push(...data));
+//Spreads the data into the cities array so it isn't nested.
+
+  function findMatches(wordToMatch, cities){
+    return cities.filter(place => {
+      //figure out if city matches what was searched
+      //create a regular expression of the word to match
+      //Parameters are 'g" and 'i' for insensitive and searching the whole string (global)
+      const regex = new RegExp(wordToMatch, 'gi');
+      //returns the filtered array of those entries but not mapped like you'd expect
+      return place.city.match(regex) || place.state.match(regex);
+    });
+
+  }
+  //formats number nicely with commas
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function displayMatches() {
+    const matchArray = findMatches(this.value, cities);
+    const html = matchArray.map(place => {
+      //to highlight what gets typed
+      const regex = new RegExp(this.value, 'gi');
+      const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+      const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+      return `
+        <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+        </li>
+      `;
+    }).join('');
+    //join returns a joined array so it's a single item
+    suggestions.innerHTML = html;
+    console.log(matchArray);
+  }
+
+  const searchInput = document.querySelector('.search');
+  const suggestions = document.querySelector('.suggestions');
+
+  searchInput.addEventListener('change', displayMatches);
+  searchInput.addEventListener('keyup', displayMatches);
 </script>
 </body>
 </html>
